@@ -1,27 +1,32 @@
-# ETLProjectAPIExtract
+```markdown
+# Exemplo de Integração com a API OpenAI
 
-# Projeto ETL com Python
+Este projeto demonstra como fazer uma integração básica com a API da OpenAI para realizar consultas ao modelo GPT.
 
-Este é um projeto de ETL (Extract, Transform, Load) desenvolvido em Python para extrair, transformar e carregar dados utilizando a biblioteca requests.
+## Estrutura do Projeto
 
-## 📋 Pré-requisitos
-
-- Python 3.8+
-- pip (gerenciador de pacotes Python)
-
-## 🔧 Instalação
-
-1. Clone este repositório:
-```bash
-git clone https://github.com/seu-usuario/nome-do-projeto.git
-cd nome-do-projeto
+```
+.
+├── exemplos
+│   └── exemplos_04.py
+├── .env
+└── requirements.txt
 ```
 
-2. Crie um ambiente virtual e ative-o:
+## Pré-requisitos
+
+- Python 3.7 ou superior
+- Uma chave de API válida da OpenAI
+
+## Instalação
+
+1. Clone o repositório
+2. Crie um ambiente virtual (recomendado):
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# ou
+venv\Scripts\activate  # Windows
 ```
 
 3. Instale as dependências:
@@ -29,59 +34,111 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-## 📦 Estrutura do Projeto
-
-projeto/
-│
-├── src/
-│ ├── extract.py # Módulo de extração de dados
-│ ├── transform.py # Módulo de transformação
-│ └── load.py # Módulo de carregamento
-│
-├── config/
-│ └── config.py # Configurações do projeto
-│
-├── tests/ # Testes unitários
-│
-├── requirements.txt # Dependências do projeto
-└── README.md
-
-## 🚀 Como usar
-
-1. Configure as variáveis de ambiente necessárias (se aplicável)
-2. Execute o script principal:
-
-```bash
-python src/main.py
+4. Crie um arquivo `.env` na raiz do projeto e adicione sua chave da API:
+```
+OPEN_AI_API_KEY=sua_chave_aqui
 ```
 
-## 📝 Exemplo de Uso
+## Conteúdo do requirements.txt
+```
+python-dotenv==1.0.0
+requests==2.31.0
+```
 
+## Código Exemplo
+
+```python:exemplos/exemplos_04.py
+import requests
+import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+url = "https://api.openai.com/v1/chat/completions"
+
+openai_api_key = os.getenv("OPEN_AI_API_KEY")
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {openai_api_key}"
+}
+
+data = {
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Olá, Qual é o preço do Etherum atualmente?"}]
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+
+print(response.json()["choices"][0]["message"]["content"])
+```
+
+## Explicação do Código
+
+### 1. Importações
 ```python
-from src.extract import extract_data
-from src.transform import transform_data
-from src.load import load_data
-
-# Extrair dados
-raw_data = extract_data('https://api.exemplo.com/dados')
-
-# Transformar dados
-transformed_data = transform_data(raw_data)
-
-# Carregar dados
-load_data(transformed_data, 'destino.csv')
+import requests  # Para fazer requisições HTTP
+import json     # Para manipulação de dados JSON
+import os       # Para variáveis de ambiente
+from dotenv import load_dotenv  # Para carregar variáveis do arquivo .env
 ```
 
-## 🛠️ Tecnologias Utilizadas
+### 2. Configuração do Ambiente
+```python
+load_dotenv()  # Carrega as variáveis do arquivo .env
+url = "https://api.openai.com/v1/chat/completions"  # URL da API da OpenAI
+openai_api_key = os.getenv("OPEN_AI_API_KEY")  # Obtém a chave da API das variáveis de ambiente
+```
 
-- [Python](https://www.python.org/)
-- [Requests](https://docs.python-requests.org/en/latest/)
-- [Pandas](https://pandas.pydata.org/) (opcional para manipulação de dados)
+### 3. Configuração dos Headers
+```python
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {openai_api_key}"
+}
+```
+Os headers são necessários para autenticação e especificação do tipo de conteúdo.
 
-## ✒️ Autores
+### 4. Preparação dos Dados
+```python
+data = {
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Olá, Qual é o preço do Etherum atualmente?"}]
+}
+```
+Define o modelo a ser usado e a mensagem para a API.
 
-* **Raphael Amorim** - *Desenvolvimento Inicial* - [raphaeleng-94](https://github.com/raphaeleng-94)
+### 5. Requisição e Resposta
+```python
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json()["choices"][0]["message"]["content"])
+```
+Envia a requisição POST e imprime a resposta do modelo.
 
-## 📄 Licença
+## Como Executar
 
-Este projeto está sob a licença MIT - veja o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
+1. Certifique-se de que todas as dependências estão instaladas
+2. Verifique se o arquivo `.env` está configurado corretamente
+3. Execute o script:
+```bash
+python exemplos/exemplos_04.py
+```
+
+## Observações Importantes
+
+- Mantenha sua chave API segura e nunca a compartilhe
+- O modelo "gpt-4o-mini" usado no exemplo deve ser substituído por um modelo válido da OpenAI
+- Certifique-se de ter créditos suficientes em sua conta OpenAI
+- Trate possíveis erros de API em um ambiente de produção
+
+## Tratamento de Erros
+
+O código exemplo é básico e não inclui tratamento de erros. Em um ambiente de produção, você deve adicionar try/catch para lidar com:
+- Erros de conexão
+- Respostas de erro da API
+- Problemas com a chave API
+- Limites de taxa excedidos
+```
+
+Este README fornece uma documentação completa para entender e executar o exemplo_04.py, incluindo instalação, configuração e explicações detalhadas de cada parte do código.
