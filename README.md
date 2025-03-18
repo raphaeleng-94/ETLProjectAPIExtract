@@ -1,5 +1,51 @@
 # ETLProjectAPIExtract
 
+# Projeto ETL com Python
+
+Este é um projeto de ETL (Extract, Transform, Load) desenvolvido em Python para extrair, transformar e carregar dados utilizando a biblioteca requests.
+
+## 📋 Pré-requisitos
+
+- Python 3.8+
+- pip (gerenciador de pacotes Python)
+
+## 🔧 Instalação
+
+1. Clone este repositório:
+```bash
+git clone https://github.com/seu-usuario/nome-do-projeto.git
+cd nome-do-projeto
+```
+
+2. Crie um ambiente virtual e ative-o:
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
+3. Instale as dependências:
+```bash
+pip install -r requirements.txt
+```
+
+## 📦 Estrutura do Projeto
+
+projeto/
+│
+├── src/
+│ ├── extract.py # Módulo de extração de dados
+│ ├── transform.py # Módulo de transformação
+│ └── load.py # Módulo de carregamento
+│
+├── config/
+│ └── config.py # Configurações do projeto
+│
+├── tests/ # Testes unitários
+│
+├── requirements.txt # Dependências do projeto
+└── README.md
+
 ## 🚀 Como usar
 
 1. Configure as variáveis de ambiente necessárias (se aplicável)
