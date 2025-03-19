@@ -1,144 +1,138 @@
+Criarei um README abrangente explicando ambos os arquivos e suas funcionalidades.
+
 ```markdown
-# Exemplo de Integração com a API OpenAI
+# Sistema de monitoramento de preços de Bitcoin
 
-Este projeto demonstra como fazer uma integração básica com a API da OpenAI para realizar consultas ao modelo GPT.
+Este projeto consiste em dois componentes principais: um pipeline de dados que coleta preços de Bitcoin da API da Coinbase e os armazena em um banco de dados PostgreSQL, e um painel Streamlit que visualiza esses dados em tempo real.
 
-## Estrutura do Projeto
+## Estrutura do projeto
 
 ```
-.
-├── exemplos
-│   └── exemplos_04.py
-├── .env
-└── requirements.txt
+├── src/
+│ └── pipeline_04.py
+├── app/
+│ └── dashboard_00.py
+└── .env
 ```
 
-## Pré-requisitos
+## Componentes
 
-- Python 3.7 ou superior
-- Uma chave de API válida da OpenAI
+### 1. Pipeline de dados (pipeline_04.py)
 
-## Instalação
+O componente pipeline é responsável por coletar, transformar e armazenar dados de preços de Bitcoin.
 
-1. Clone o repositório
-2. Crie um ambiente virtual (recomendado):
+#### Principais recursos:
+
+- **Configuração do ambiente**
+- Usa `python-dotenv` para gerenciar variáveis ​​de ambiente
+- Configura o Logfire para registro abrangente
+- Configura a conexão do banco de dados PostgreSQL
+
+- **Configuração do banco de dados**
+- Usa o SQLAlchemy ORM para operações de banco de dados
+- Cria automaticamente as tabelas necessárias se elas não existirem
+
+- **Funções de coleta de dados**
+- `extract_dados_bitcoin()`: Obtém dados de preço do Bitcoin em tempo real da API da Coinbase
+- `transform_dados_bitcoin()`: Transforma dados brutos da API em formato estruturado
+- `salvar_dados_postgres()`: Salva os dados processados ​​no banco de dados PostgreSQL
+
+- **Fluxo de execução**
+- Executa continuamente com intervalos de 15 segundos
+- Inclui tratamento de erros e desligamento normal com CTRL+C
+- Registra todas as operações e possíveis erros
+
+### 2. Painel (dashboard_00.py)
+
+Um baseado em Streamlit painel da web que visualiza os dados de preço do Bitcoin coletados.
+
+#### Principais recursos:
+
+- **Visualização de dados**
+- Atualizações de preços em tempo real
+- Gráfico de preços históricos
+- Exibição de estatísticas importantes
+
+- **Componentes**
+- Visualização de tabela de dados recentes
+- Gráfico de linhas mostrando a evolução dos preços
+- Métricas mostrando os preços atuais, máximos e mínimos
+
+- **Integração de banco de dados**
+- Conexão direta com o banco de dados PostgreSQL
+- Atualização automática de dados
+- Tratamento de erros para problemas de conexão com o banco de dados
+
+## Detalhes técnicos
+
+### Dependências
+
+- Python 3.x
+- PostgreSQL
+- Bibliotecas:
+- `requests`: Para chamadas de API
+- `sqlalchemy`: ORM de banco de dados
+- `logfire`: Sistema de registro
+- `streamlit`: Estrutura de painel
+- `pandas`: Manipulação de dados
+- `psycopg2`: Adaptador PostgreSQL
+- `python-dotenv`: Gerenciamento de ambiente
+
+### Variáveis ​​de ambiente
+
+Variáveis ​​necessárias em `.env` arquivo:
+```
+POSTGRES_USER=seu_usuário
+POSTGRES_PASSWORD=sua_senha
+POSTGRES_DB=seu_banco_de_dados
+POSTGRES_HOST=seu_host
+POSTGRES_PORT=sua_porta
+```
+
+## Uso
+
+1. **Configurando o Pipeline**
 ```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-venv\Scripts\activate  # Windows
+python src/pipeline_04.py
 ```
+Isso começará a coletar dados de preço do Bitcoin a cada 15 segundos.
 
-3. Instale as dependências:
+2. **Executando o Dashboard**
 ```bash
-pip install -r requirements.txt
+streamlit run app/dashboard_00.py
 ```
+Isso iniciará o painel da web em sua máquina local.
 
-4. Crie um arquivo `.env` na raiz do projeto e adicione sua chave da API:
-```
-OPEN_AI_API_KEY=sua_chave_aqui
-```
+## Fluxo de dados
 
-## Conteúdo do requirements.txt
-```
-python-dotenv==1.0.0
-requests==2.31.0
-```
+1. O pipeline coleta dados da API da Coinbase
+2. Os dados são transformados e marcados com data e hora
+3. Os dados processados ​​são armazenados no PostgreSQL
+4. O painel lê do PostgreSQL
+5. As visualizações são atualizadas em tempo real
 
-## Código Exemplo
+## Tratamento de erros
 
-```python:exemplos/exemplos_04.py
-import requests
-import json
-import os
-from dotenv import load_dotenv
+- Ambos os componentes incluem tratamento de erros abrangente
+- Chamadas de API com falha ou operações de banco de dados são registradas
+- O pipeline tenta novamente automaticamente após erros
+- O painel exibe mensagens de erro amigáveis
 
-load_dotenv()
+## Registro
 
-url = "https://api.openai.com/v1/chat/completions"
+- Sistema de registro abrangente usando Logfire
+- Rastreia chamadas de API, operações de banco de dados e erros
+- Inclui registro de consulta SQL
+- Registros de data e hora para todas as operações
 
-openai_api_key = os.getenv("OPEN_AI_API_KEY")
+## Melhores práticas
 
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {openai_api_key}"
-}
+- Uso de variáveis ​​de ambiente para dados confidenciais
+- Separação de preocupações (coleta de dados vs. visualização)
+- Tratamento de erros e registro adequados
+- Estrutura de código limpa com responsabilidades de função claras
+- Gerenciamento de conexão de banco de dados
+- Criação automatizada de tabelas
+- Processamento e visualização de dados em tempo real
 
-data = {
-    "model": "gpt-4o-mini",
-    "messages": [{"role": "user", "content": "Olá, Qual é o preço do Etherum atualmente?"}]
-}
-
-response = requests.post(url, headers=headers, data=json.dumps(data))
-
-print(response.json()["choices"][0]["message"]["content"])
-```
-
-## Explicação do Código
-
-### 1. Importações
-```python
-import requests  # Para fazer requisições HTTP
-import json     # Para manipulação de dados JSON
-import os       # Para variáveis de ambiente
-from dotenv import load_dotenv  # Para carregar variáveis do arquivo .env
-```
-
-### 2. Configuração do Ambiente
-```python
-load_dotenv()  # Carrega as variáveis do arquivo .env
-url = "https://api.openai.com/v1/chat/completions"  # URL da API da OpenAI
-openai_api_key = os.getenv("OPEN_AI_API_KEY")  # Obtém a chave da API das variáveis de ambiente
-```
-
-### 3. Configuração dos Headers
-```python
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {openai_api_key}"
-}
-```
-Os headers são necessários para autenticação e especificação do tipo de conteúdo.
-
-### 4. Preparação dos Dados
-```python
-data = {
-    "model": "gpt-4o-mini",
-    "messages": [{"role": "user", "content": "Olá, Qual é o preço do Etherum atualmente?"}]
-}
-```
-Define o modelo a ser usado e a mensagem para a API.
-
-### 5. Requisição e Resposta
-```python
-response = requests.post(url, headers=headers, data=json.dumps(data))
-print(response.json()["choices"][0]["message"]["content"])
-```
-Envia a requisição POST e imprime a resposta do modelo.
-
-## Como Executar
-
-1. Certifique-se de que todas as dependências estão instaladas
-2. Verifique se o arquivo `.env` está configurado corretamente
-3. Execute o script:
-```bash
-python exemplos/exemplos_04.py
-```
-
-## Observações Importantes
-
-- Mantenha sua chave API segura e nunca a compartilhe
-- O modelo "gpt-4o-mini" usado no exemplo deve ser substituído por um modelo válido da OpenAI
-- Certifique-se de ter créditos suficientes em sua conta OpenAI
-- Trate possíveis erros de API em um ambiente de produção
-
-## Tratamento de Erros
-
-O código exemplo é básico e não inclui tratamento de erros. Em um ambiente de produção, você deve adicionar try/catch para lidar com:
-- Erros de conexão
-- Respostas de erro da API
-- Problemas com a chave API
-- Limites de taxa excedidos
-```
-
-Este README fornece uma documentação completa para entender e executar o exemplo_04.py, incluindo instalação, configuração e explicações detalhadas de cada parte do código.
+Este projeto fornece uma solução completa para monitorar preços de Bitcoin com atualizações em tempo real e capacidades de visualização.
