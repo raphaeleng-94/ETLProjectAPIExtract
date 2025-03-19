@@ -1,4 +1,3 @@
-Criarei um README abrangente explicando ambos os arquivos e suas funcionalidades.
 
 ```markdown
 # Sistema de monitoramento de preços de Bitcoin
